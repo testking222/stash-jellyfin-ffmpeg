@@ -1,4 +1,4 @@
-This fork is used to automatically build docker images from the latest stash release. The image is based on the stash CUDA dockerfile (therefore no ARM support), with some modifications to replace ffmpeg with jellyfin-ffmpeg and include the required python dependencies for scrapers and plugins.
+This fork is used to build docker images from the latest stash release. The image is based on the stash CUDA dockerfile (therefore no ARM support), with some modifications to replace ffmpeg with jellyfin-ffmpeg and include the required python dependencies for scrapers and plugins.
 
 
 jellyfin-ffmpeg contains multiple patches and optimisations to enable full hardware transcoding and is more performant than the current implementation in stash.
