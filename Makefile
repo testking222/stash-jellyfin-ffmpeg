@@ -315,3 +315,8 @@ docker-build: pre-build
 .PHONY: docker-cuda-build
 docker-cuda-build: pre-build
 	docker build --build-arg GITHASH=$(GITHASH) --build-arg STASH_VERSION=$(STASH_VERSION) -t stash/cuda-build -f docker/build/x86_64/Dockerfile-CUDA .
+
+# locally builds and tags a 'nerethos/stash-jellyfin-ffmpeg' docker image
+.PHONY: docker-jellyfin-ffmpeg
+docker-jellyfin-ffmpeg: pre-build
+	docker build --build-arg GITHASH=$(GITHASH) --build-arg STASH_VERSION=$(STASH_VERSION) -t nerethos/stash-jellyfin-ffmpeg -f docker/build/x86_64/Dockerfile-jellyfin-ffmpeg .
