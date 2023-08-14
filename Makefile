@@ -401,5 +401,5 @@ docker-cuda-build: build-info
 
 # locally builds and tags a 'nerethos/stash-jellyfin-ffmpeg' docker image
 .PHONY: docker-jellyfin-ffmpeg
-docker-jellyfin-ffmpeg: pre-build
+docker-jellyfin-ffmpeg: build-info
 	docker build --build-arg GITHASH=$(GITHASH) --build-arg STASH_VERSION=$(STASH_VERSION) -t nerethos/stash-jellyfin-ffmpeg -f docker/build/x86_64/Dockerfile-jellyfin-ffmpeg .
