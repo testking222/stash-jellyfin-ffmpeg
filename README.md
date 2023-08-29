@@ -83,3 +83,81 @@ You can also change the Stash interface to fit your desired style with various s
 Pull requests are welcome! 
 
 See [Development](docs/DEVELOPMENT.md) and [Contributing](docs/CONTRIBUTING.md) for information on working with the codebase, getting a local development setup, and contributing changes.
+
+## Docker compose
+Set up docker with compose for your distro.
+Set up your nvidia gpu.
+
+Install the libnvidia-container, nvidia-container and nvidia-docker packages.
+
+Arch Linux with rootless-compose
+```
+yay -S libnvidia-container libnvidia-container-tools nvidia-container-toolkit nvidia-container-runtime nvidia-docker
+mkdir stash
+cd stash
+sudo chown -R $USER:$USER .
+vi docker-compose.yml
+```
+Use below docker-compose.yml template just fill in your paths.
+
+```
+docker compose up -d
+```
+
+Browse to localhost, go to settings, system under Transcoding add two FFmpeg Transcode Input Args
+-hwaccel
+cuda
+
+```
+# APPNICENAME=Stash
+# APPDESCRIPTION=An organizer for your porn, written in Go
+version: '3.4'
+services:
+  stash:
+    image: nerethos/stash-jellyfin-ffmpeg:latest
+    container_name: stash
+    restart: unless-stopped
+    ## the container's port must be the same with the STASH_PORT in the environment section
+    #ports:
+    #  - "80:9999"
+    ## If you intend to use stash's DLNA functionality uncomment the below network mode and comment out the above ports section
+    network_mode: host
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "10"
+        max-size: "2m"
+    environment:
+      - STASH_STASH=/data/
+      - STASH_GENERATED=/generated/
+      - STASH_METADATA=/metadata/
+      - STASH_CACHE=/cache/
+      ## Adjust below to change default port (9999)
+      - STASH_PORT=80
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=compute,video,utility
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      ## Adjust below paths (the left part) to your liking.
+      ## E.g. you can change ./config:/root/.stash to ./stash:/root/.stash
+
+      ## Keep configs, scrapers, and plugins here.
+      - ./config:/root/.stash
+      ## Point this at your collection.
+      - /path/to/data:/data
+      ## This is where your stash's metadata lives
+      - ./metadata:/metadata
+      ## Any other cache content.
+      - ./cache:/cache
+      ## Where to store binary blob data (scene covers, images)
+      - ./blobs:/blobs
+      ## Where to store generated content (screenshots,previews,transcodes,sprites)
+      - ./generated:/generated
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+```
