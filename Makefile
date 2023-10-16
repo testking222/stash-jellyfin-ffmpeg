@@ -400,6 +400,12 @@ docker-cuda-build: build-info
 	docker build --build-arg GITHASH=$(GITHASH) --build-arg STASH_VERSION=$(STASH_VERSION) -t stash/cuda-build -f docker/build/x86_64/Dockerfile-CUDA .
 
 # locally builds and tags a 'nerethos/stash-jellyfin-ffmpeg' docker image
+version=v0.23.1
 .PHONY: docker-jellyfin-ffmpeg
 docker-jellyfin-ffmpeg: build-info
-	docker build --build-arg GITHASH=$(GITHASH) --build-arg STASH_VERSION=$(STASH_VERSION) -t nerethos/stash-jellyfin-ffmpeg -f docker/build/x86_64/Dockerfile-jellyfin-ffmpeg .
+	docker build --build-arg GITHASH=$(GITHASH) --build-arg STASH_VERSION=$(STASH_VERSION)_jellyfin-ffmpeg -t nerethos/stash-jellyfin-ffmpeg:latest -t nerethos/stash-jellyfin-ffmpeg:${version}  -f docker/build/x86_64/Dockerfile-jellyfin-ffmpeg .
+
+.PHONY: docker-jellyfin-ffmpeg-push
+docker-jellyfin-ffmpeg-push: docker-jellyfin-ffmpeg
+	docker push nerethos/stash-jellyfin-ffmpeg:${version}
+	docker push nerethos/stash-jellyfin-ffmpeg:latest
