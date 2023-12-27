@@ -38,16 +38,10 @@ ARG APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE=DontWarn
 # https://github.com/NVIDIA/nvidia-docker/wiki/Installation-(Native-GPU-Support)
 ENV NVIDIA_DRIVER_CAPABILITIES="compute,video,utility"
 
-# https://github.com/intel/compute-runtime/releases
-ARG GMMLIB_VERSION=22.0.2
-ARG IGC_VERSION=1.0.10395
-ARG NEO_VERSION=22.08.22549
-ARG LEVEL_ZERO_VERSION=1.3.22549
-
 # Install dependencies for hardware acceleration:
 # curl: healthcheck
 RUN apt-get update \
- && apt-get install --no-install-recommends --no-install-suggests -y ca-certificates gnupg wget curl python3 python3-requests python3-requests-toolbelt python3-xmlschema python3-pip libvips-tools ruby tzdata \
+ && apt-get install --no-install-recommends --no-install-suggests -y ca-certificates gnupg wget curl python3 python3-dev python3-requests python3-requests-toolbelt python3-xmlschema python3-pip libvips-tools ruby tzdata \
  && pip install mechanicalsoup cloudscraper bencoder.pyx stashapp-tools\
  && gem install faraday \
  && wget -O - https://repo.jellyfin.org/jellyfin_team.gpg.key | apt-key add - \
@@ -55,19 +49,6 @@ RUN apt-get update \
  && apt-get update \
  && apt-get install --no-install-recommends --no-install-suggests -y \
    jellyfin-ffmpeg5 \
-# Intel VAAPI Tone mapping dependencies:
-# Prefer NEO to Beignet since the latter one doesn't support Comet Lake or newer for now.
-# Do not use the intel-opencl-icd package from repo since they will not build with RELEASE_WITH_REGKEYS enabled.
- && mkdir intel-compute-runtime \
- && cd intel-compute-runtime \
- && wget https://github.com/intel/compute-runtime/releases/download/${NEO_VERSION}/intel-gmmlib_${GMMLIB_VERSION}_amd64.deb \
- && wget https://github.com/intel/intel-graphics-compiler/releases/download/igc-${IGC_VERSION}/intel-igc-core_${IGC_VERSION}_amd64.deb \
- && wget https://github.com/intel/intel-graphics-compiler/releases/download/igc-${IGC_VERSION}/intel-igc-opencl_${IGC_VERSION}_amd64.deb \
- && wget https://github.com/intel/compute-runtime/releases/download/${NEO_VERSION}/intel-opencl-icd_${NEO_VERSION}_amd64.deb \
- && wget https://github.com/intel/compute-runtime/releases/download/${NEO_VERSION}/intel-level-zero-gpu_${LEVEL_ZERO_VERSION}_amd64.deb \
- && dpkg -i *.deb \
- && cd .. \
- && rm -rf intel-compute-runtime \
  && apt-get remove gnupg wget -y \
  && apt-get clean autoclean -y \
  && apt-get autoremove -y \
